@@ -64,6 +64,9 @@ export const CONFIGURATION_FILE_TEMPLATE =
     /** Optional time limit in seconds for the scan. Scan is interrupted after reaching the limit. Defaults to 5 hours 30 minutes. */
     timeLimit: 5.5 * 60 * 60, // 5 hours 30 minutes
 
+    /** Optional boolean flag used to enable result comparison. Defauls to false. */
+    compare: false,
+
     /**
      * Optional callback invoked once scan is complete.
      *
