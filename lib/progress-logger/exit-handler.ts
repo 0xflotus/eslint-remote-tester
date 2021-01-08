@@ -1,5 +1,5 @@
 import config from '@config';
-import { ResultsStore } from '@file-client';
+import { ResultsStore, writeComparisonResults } from '@file-client';
 
 /**
  * Callback invoked once scan is complete and application is about to exit
@@ -9,6 +9,7 @@ export default async function onExit(): Promise<void> {
 
     if (config.onComplete) {
         const results = ResultsStore.getResults();
+
         try {
             const onCompletePromise = config.onComplete(results);
 
@@ -17,6 +18,17 @@ export default async function onExit(): Promise<void> {
             }
         } catch (e) {
             errors.push('Error occured while calling onComplete callback');
+            errors.push(e.stack);
+        }
+    }
+
+    if (config.compare) {
+        const results = ResultsStore.getResults();
+
+        try {
+            writeComparisonResults(results);
+        } catch (e) {
+            errors.push('Error occured while generating comparison results');
             errors.push(e.stack);
         }
     }

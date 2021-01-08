@@ -2,7 +2,7 @@ const repositories = require('./configs/repositories.json');
 const pathIgnorePattern = require('./configs/pathIgnorePattern');
 
 module.exports = {
-    repositories: repositories.slice(0, 15),
+    repositories: repositories.slice(0, 3),
 
     extensions: ['js', 'jsx', 'ts', 'tsx'],
 
@@ -10,7 +10,7 @@ module.exports = {
 
     maxFileSizeBytes: undefined,
 
-    rulesUnderTesting: [],
+    rulesUnderTesting: ['no-empty-function'],
 
     resultParser: undefined,
 
@@ -28,12 +28,13 @@ module.exports = {
                 jsx: true,
             },
         },
-        extends: ['eslint:recommended'],
+        //extends: ['eslint:recommended'],
+        rules: { 'no-empty-function': 'error' },
     },
 
     cache: true,
 
-    compare: false,
+    compare: true,
 
     /**
      * Optional callback invoked once scan is complete.

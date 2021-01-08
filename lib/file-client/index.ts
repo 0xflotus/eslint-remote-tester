@@ -4,6 +4,7 @@ export {
     prepareResultsDirectory,
     RESULT_TEMPLATE,
 } from './results-writer';
+export { writeComparisonResults } from './result-comparator';
 export {
     CACHE_LOCATION,
     RESULTS_LOCATION,
