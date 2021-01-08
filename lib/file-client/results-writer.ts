@@ -2,7 +2,12 @@ import fs from 'fs';
 import { isMainThread } from 'worker_threads';
 
 import ResultsStore from './results-store';
-import { CACHE_LOCATION, RESULTS_LOCATION, URL } from './file-constants';
+import {
+    CACHE_LOCATION,
+    RESULTS_COMPARE_DIR,
+    RESULTS_LOCATION,
+    URL,
+} from './file-constants';
 import {
     RESULT_PARSER_TO_TEMPLATE,
     RESULT_PARSER_TO_EXTENSION,
@@ -13,18 +18,33 @@ import { LintMessage } from '@engine/types';
 
 export const RESULT_TEMPLATE = RESULT_PARSER_TO_TEMPLATE[config.resultParser];
 const RESULT_EXTENSION = RESULT_PARSER_TO_EXTENSION[config.resultParser];
+const RESULTS_COMPARE_PATH = `${RESULTS_LOCATION}/${RESULTS_COMPARE_DIR}`;
 
 /**
- * Initialize results folder
+ * Prepare results directory before scan
  * - Should be ran once from the main thread
+ * - Clear previous results from result directory's root
+ * - Clear previous comparison results from comparison directory
  */
 export function prepareResultsDirectory(): void {
-    if (isMainThread) {
-        if (fs.existsSync(RESULTS_LOCATION)) {
-            fs.rmdirSync(RESULTS_LOCATION, { recursive: true });
-        }
+    if (!isMainThread) return;
 
+    if (fs.existsSync(RESULTS_LOCATION)) {
+        // Clear previous results, excluding possible comparison directory
+        fs.readdirSync(RESULTS_LOCATION)
+            .filter(name => name !== RESULTS_COMPARE_DIR)
+            .forEach(name => fs.unlinkSync(`${RESULTS_LOCATION}/${name}`));
+    } else {
         fs.mkdirSync(RESULTS_LOCATION);
+    }
+
+    if (fs.existsSync(RESULTS_COMPARE_PATH)) {
+        // Clear previous comparison results
+        fs.readdirSync(RESULTS_COMPARE_PATH).forEach(name =>
+            fs.unlinkSync(`${RESULTS_COMPARE_PATH}/${name}`)
+        );
+    } else {
+        fs.mkdirSync(RESULTS_COMPARE_PATH);
     }
 }
 
